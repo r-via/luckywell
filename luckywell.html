@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>LuckyWell — Before you ape in, throw a coin.</title>
+<meta name="theme-color" content="#0a1628">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sky-top: #4FC3F7;
+  --sky-mid: #81D4FA;
+  --sky-bottom: #A5D6A7;
+  --grass: #66BB6A;
+  --coin-gold: #FFD54F;
+  --coin-dark: #FFC107;
+  --btn-teal: #26C6DA;
+  --btn-teal-dark: #00ACC1;
+  --text-dark: #263238;
+  --bubble-bg: rgba(255,255,255,0.95);
+  --danger: #c0392b;         /* darkened from #EF5350 for AA on white */
+  --win-green: #2e7d32;      /* darkened from #66BB6A for AA on white */
+  --win-green-bright: #66BB6A; /* original for decorative/bg use */
+  --purple-accent: #8e24aa;  /* darkened from #AB47BC for AA on white */
+  --deep-bg: #0a1628;
+  --deep-card: rgba(255,255,255,0.06);
+  --deep-border: rgba(255,255,255,0.08);
+  --glow-teal: rgba(38,198,218,0.25);
+  --glow-gold: rgba(255,213,79,0.2);
+  /* AA-safe text colors for light backgrounds */
+  --gray-text: #546E7A;      /* replaces #90A4AE — 5.12:1 on white */
+  --gray-light: #506C77;     /* AA-safe secondary gray — 5.60:1 on white */
+  --gray-mid: #4a6572;       /* replaces #78909C — 5.73:1 on white */
+  --teal-text: #00838f;      /* replaces #00ACC1 for text on white — 4.83:1 */
+  --gold-text: #8c6900;      /* replaces #FFC107 for text on white — 5.04:1 */
+  --teal-btn-bg: #00838f;    /* darkened teal for white text buttons — 4.83:1 */
+  --mindset-text: #5c0f8b;   /* AA-safe purple on sky composited — 5.09:1 */
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body {
+  font-family:'Nunito',sans-serif;
+  background:var(--deep-bg);
+  min-height:100vh;
+  overflow-x:hidden;
+  display:flex;
+  justify-content:center;
+}
+.app { width:100%; max-width:430px; min-height:100vh; position:relative; overflow:hidden; }
+.screen { display:none; flex-direction:column; min-height:100vh; position:relative; }
+.screen.active { display:flex; }
+
+/* ===== LANDING ===== */
+.landing {
+  background:linear-gradient(180deg,#0a1628 0%,#0f2035 40%,#132a45 100%);
+  align-items:center;
+  padding:0 24px 40px;
+  overflow-y:auto;
+}
+.stars-canvas {
+  position:absolute; top:0; left:0; right:0; height:400px; pointer-events:none; overflow:hidden;
+}
+.star {
+  position:absolute; width:2px; height:2px; background:#fff; border-radius:50%;
+  animation:twinkle var(--dur) ease-in-out infinite; animation-delay:var(--delay);
+}
+@keyframes twinkle { 0%,100%{opacity:.2} 50%{opacity:1} }
+
+.lang-toggle {
+  position:absolute; top:16px; right:16px; z-index:10;
+  background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
+  border-radius:20px; padding:3px; display:flex;
+}
+.lang-btn {
+  background:none; border:none; color:rgba(255,255,255,.6);
+  font-family:'Space Mono',monospace; font-size:11px; padding:4px 10px;
+  border-radius:16px; cursor:pointer; transition:all .2s;
+}
+.lang-btn.active { background:rgba(255,255,255,.1); color:#fff; }
+
+.landing-hero { position:relative; z-index:1; text-align:center; padding-top:60px; margin-bottom:28px; }
+.landing-badge {
+  display:inline-block; background:rgba(38,198,218,.12); border:1px solid rgba(38,198,218,.25);
+  border-radius:50px; padding:5px 14px; font-family:'Space Mono',monospace;
+  font-size:10px; color:var(--btn-teal); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:18px;
+}
+.landing-well-icon { width:130px; height:130px; margin:0 auto 16px; position:relative; animation:gentleFloat 4s ease-in-out infinite; }
+@keyframes gentleFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+.landing-well-glow {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:170px; height:170px; border-radius:50%;
+  background:radial-gradient(circle,var(--glow-gold) 0%,transparent 70%);
+  animation:pulseGlow 3s ease-in-out infinite;
+}
+@keyframes pulseGlow { 0%,100%{opacity:.4;transform:translate(-50%,-50%) scale(1)} 50%{opacity:.7;transform:translate(-50%,-50%) scale(1.15)} }
+
+.landing-title { font-family:'Fredoka',sans-serif; font-size:38px; font-weight:700; color:#fff; line-height:1.1; margin-bottom:6px; }
+.landing-title .lucky { color:var(--coin-gold); }
+.landing-title .well { color:var(--btn-teal); }
+.landing-tagline { font-family:'Space Mono',monospace; font-size:12px; color:rgba(255,255,255,.65); letter-spacing:.5px; margin-bottom:24px; line-height:1.5; }
+.landing-oneliner { font-size:16px; color:rgba(255,255,255,.8); line-height:1.6; max-width:340px; margin:0 auto 32px; }
+.landing-oneliner em { color:var(--coin-gold); font-style:normal; font-weight:700; }
+
+/* Ritual steps */
+.ritual-steps { width:100%; position:relative; z-index:1; margin-bottom:32px; }
+.ritual-step { display:flex; align-items:flex-start; gap:12px; padding:12px 0; position:relative; }
+.ritual-step:not(:last-child)::after {
+  content:''; position:absolute; left:19px; top:46px; bottom:0; width:2px;
+  background:linear-gradient(180deg,rgba(38,198,218,.3),transparent);
+}
+.step-num {
+  width:38px; height:38px; border-radius:50%; background:rgba(38,198,218,.1);
+  border:1.5px solid rgba(38,198,218,.3); display:flex; align-items:center;
+  justify-content:center; font-size:16px; flex-shrink:0;
+}
+.step-content h3 { font-family:'Fredoka',sans-serif; font-size:15px; font-weight:600; color:#fff; margin-bottom:3px; }
+.step-content p { font-size:12px; color:rgba(255,255,255,.65); line-height:1.4; }
+
+/* Philosophy */
+.philo-section { width:100%; position:relative; z-index:1; margin-bottom:32px; }
+.philo-label { font-family:'Space Mono',monospace; font-size:9px; color:rgba(255,255,255,.6); letter-spacing:2px; text-transform:uppercase; margin-bottom:12px; }
+.philo-card { background:var(--deep-card); border:1px solid var(--deep-border); border-radius:14px; padding:16px; margin-bottom:8px; }
+.philo-card .icon { font-size:20px; margin-bottom:6px; }
+.philo-card .text { font-size:13px; color:rgba(255,255,255,.65); line-height:1.5; }
+.philo-card .text strong { color:#fff; }
+
+/* Not section */
+.not-section {
+  width:100%; position:relative; z-index:1; margin-bottom:32px; padding:16px;
+  background:rgba(239,83,80,.05); border:1px solid rgba(239,83,80,.1); border-radius:14px;
+}
+.not-section h4 { font-family:'Fredoka',sans-serif; font-size:13px; color:rgba(255,255,255,.65); margin-bottom:8px; }
+.not-item { font-size:12px; color:rgba(255,255,255,.65); padding:3px 0; }
+.not-item span.x { color:#ff6b6b; margin-right:5px; }
+.not-coda { color:rgba(255,255,255,.65); margin-top:8px; font-style:italic; font-size:12px; }
+
+/* CTA */
+.landing-cta { width:100%; text-align:center; position:relative; z-index:1; margin-bottom:16px; }
+.closing-quote { font-family:'Space Mono',monospace; font-size:13px; color:var(--coin-gold); margin-bottom:20px; font-style:italic; }
+.btn-connect {
+  width:100%; background:linear-gradient(135deg,var(--teal-btn-bg),#006978);
+  color:#fff; border:none; border-radius:50px; padding:16px 28px;
+  font-family:'Fredoka',sans-serif; font-size:17px; font-weight:600; cursor:pointer;
+  box-shadow:0 8px 30px var(--glow-teal); transition:all .2s; margin-bottom:10px;
+}
+.btn-connect:hover { transform:translateY(-2px); }
+.btn-connect:active { transform:translateY(1px); }
+.btn-skip {
+  background:none; border:1px solid rgba(255,255,255,.2); color:rgba(255,255,255,.65);
+  border-radius:50px; padding:11px 28px; font-family:'Nunito',sans-serif; font-size:13px;
+  cursor:pointer; width:100%; transition:all .2s;
+}
+.btn-skip:hover { border-color:rgba(255,255,255,.35); color:rgba(255,255,255,.8); }
+
+.landing-footer {
+  font-family:'Space Mono',monospace; font-size:9px; color:rgba(255,255,255,.55);
+  text-align:center; padding:16px 0; position:relative; z-index:1;
+}
+.sol-badge { display:inline-flex; align-items:center; gap:4px; background:rgba(255,255,255,.04); border-radius:10px; padding:4px 10px; margin-top:4px; }
+
+/* ===== GAME SCREEN ===== */
+.game-screen { background:linear-gradient(180deg,var(--sky-top) 0%,var(--sky-mid) 35%,var(--sky-bottom) 60%,var(--grass) 100%); }
+.game-header {
+  background:rgba(255,255,255,.15); backdrop-filter:blur(10px);
+  padding:11px 14px; display:flex; justify-content:space-between; align-items:center;
+  border-bottom:1px solid rgba(255,255,255,.2);
+}
+.wallet-badge {
+  background:rgba(255,255,255,.9); border-radius:20px; padding:5px 11px;
+  font-size:11px; font-weight:700; color:var(--text-dark); display:flex; align-items:center; gap:5px;
+}
+.wallet-badge .dot { width:7px; height:7px; background:var(--win-green); border-radius:50%; }
+.header-right { display:flex; align-items:center; gap:10px; }
+.mindset-badge {
+  background:rgba(142,36,170,.12); border:1px solid rgba(142,36,170,.25);
+  border-radius:20px; padding:3px 9px; font-size:9px; font-weight:700;
+  color:var(--mindset-text); letter-spacing:.5px;
+}
+.balance-display { text-align:right; }
+.balance-display .label { font-size:9px; color:var(--text-dark); text-transform:uppercase; letter-spacing:1px; }
+.balance-display .amount { font-family:'Fredoka',sans-serif; font-size:17px; font-weight:700; color:var(--text-dark); }
+
+.ritual-banner {
+  margin:10px 14px; background:rgba(255,255,255,.12); backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.2); border-radius:12px; padding:9px 12px;
+  display:flex; align-items:center; gap:9px;
+}
+.ritual-banner .rb-icon { font-size:18px; }
+.ritual-banner .rb-text { font-size:11px; color:var(--text-dark); line-height:1.3; }
+.ritual-banner .rb-text strong { color:var(--text-dark); }
+
+.pool-card {
+  margin:0 14px 10px; background:var(--bubble-bg); border-radius:16px; padding:12px 16px;
+  box-shadow:0 4px 16px rgba(0,0,0,.07);
+}
+.pool-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
+.pool-title { font-family:'Fredoka',sans-serif; font-size:12px; color:var(--gray-text); display:flex; align-items:center; gap:5px; }
+.pool-live { font-family:'Space Mono',monospace; font-size:9px; color:var(--win-green); display:flex; align-items:center; gap:4px; }
+.pool-live::before { content:''; width:6px; height:6px; background:var(--win-green-bright); border-radius:50%; animation:blink 1.5s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+.pool-amount { font-family:'Fredoka',sans-serif; font-size:28px; font-weight:700; color:var(--text-dark); display:flex; align-items:baseline; gap:6px; }
+.pool-amount .sol { font-size:13px; color:#90A4AE; }
+.pool-stats { display:flex; gap:12px; margin-top:6px; padding-top:6px; border-top:1px solid rgba(0,0,0,.05); }
+.pool-stat { font-size:10px; color:var(--gray-light); }
+.pool-stat strong { color:var(--text-dark); }
+
+.game-well-area { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0 20px; position:relative; }
+.game-well-wrap { position:relative; width:190px; height:190px; }
+.well-svg { width:100%; height:100%; filter:drop-shadow(0 5px 10px rgba(0,0,0,.1)); }
+.well-face { animation:wellBob 3s ease-in-out infinite; }
+@keyframes wellBob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+.water-shimmer { animation:shimmer 2.5s ease-in-out infinite; }
+@keyframes shimmer { 0%,100%{opacity:.6} 50%{opacity:1} }
+.throw-prompt { font-family:'Fredoka',sans-serif; font-size:13px; color:var(--text-dark); margin-top:6px; text-align:center; animation:softPulse 2.5s ease-in-out infinite; }
+@keyframes softPulse { 0%,100%{opacity:.65} 50%{opacity:1} }
+
+.token-section { padding:0 14px 10px; }
+.amount-card { background:var(--bubble-bg); border-radius:16px; padding:12px 14px; box-shadow:0 4px 16px rgba(0,0,0,.07); }
+.amount-label { font-family:'Fredoka',sans-serif; font-size:12px; color:var(--gray-text); margin-bottom:7px; }
+.amount-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-bottom:6px; }
+.amt-btn {
+  background:#F5F5F5; border:2px solid transparent; border-radius:11px; padding:8px 2px 6px;
+  font-family:'Fredoka',sans-serif; font-size:15px; font-weight:600; color:var(--text-dark);
+  cursor:pointer; transition:all .15s; text-align:center; position:relative;
+}
+.amt-btn .amt-sub { display:block; font-size:9px; font-weight:700; color:var(--gray-light); margin-top:1px; }
+.amt-btn:hover { background:#E0F7FA; }
+.amt-btn.selected { background:linear-gradient(135deg,#E0F7FA,#B2EBF2); border-color:var(--teal-text); color:#006978; }
+.amt-btn.selected .amt-sub { color:#006978; }
+
+/* Payout info row */
+.payout-info {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:8px 12px; margin-bottom:10px;
+  background:linear-gradient(135deg,rgba(255,213,79,.08),rgba(171,71,188,.06));
+  border:1px solid rgba(255,213,79,.15); border-radius:10px;
+}
+.payout-left { display:flex; flex-direction:column; }
+.payout-label { font-family:'Space Mono',monospace; font-size:8px; color:var(--gray-text); letter-spacing:.5px; text-transform:uppercase; }
+.payout-value { font-family:'Fredoka',sans-serif; font-size:18px; font-weight:700; color:var(--gold-text); }
+.payout-value .sol { font-size:11px; color:var(--gray-light); }
+.payout-right { text-align:right; display:flex; flex-direction:column; gap:2px; }
+.payout-odds { font-family:'Space Mono',monospace; font-size:9px; color:var(--gray-text); }
+.payout-mult { font-family:'Fredoka',sans-serif; font-size:13px; font-weight:700; color:var(--purple-accent); }
+
+/* Odds transparency strip */
+.odds-strip {
+  display:flex; align-items:center; gap:6px; padding:6px 0 2px;
+}
+.odds-bar-wrap { flex:1; height:6px; background:#ECEFF1; border-radius:3px; overflow:hidden; position:relative; }
+.odds-bar-fill { height:100%; border-radius:3px; background:linear-gradient(90deg,var(--win-green),var(--btn-teal)); transition:width .3s; }
+.odds-label { font-family:'Space Mono',monospace; font-size:9px; color:var(--gray-text); white-space:nowrap; }
+.throw-btn {
+  width:100%; background:linear-gradient(135deg,var(--coin-gold),var(--coin-dark));
+  color:var(--text-dark); border:none; border-radius:50px; padding:14px;
+  font-family:'Fredoka',sans-serif; font-size:17px; font-weight:700; cursor:pointer;
+  box-shadow:0 5px 18px rgba(255,193,7,.3); transition:all .2s;
+  display:flex; align-items:center; justify-content:center; gap:7px;
+}
+.throw-btn:hover { transform:translateY(-2px); }
+.throw-btn:active { transform:translateY(1px); }
+.throw-btn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+
+.history-section { padding:0 14px 105px; }
+.history-title { font-family:'Fredoka',sans-serif; font-size:13px; color:var(--text-dark); margin-bottom:6px; }
+.history-item {
+  background:var(--bubble-bg); border-radius:12px; padding:9px 12px; margin-bottom:5px;
+  display:flex; justify-content:space-between; align-items:center;
+  box-shadow:0 2px 8px rgba(0,0,0,.04); animation:fadeUp .3s ease-out;
+}
+.h-left { display:flex; align-items:center; gap:8px; }
+.h-emoji { font-size:20px; }
+.h-info .h-label { font-size:10px; color:var(--gray-light); font-weight:600; }
+.h-info .h-pred { font-size:10px; color:var(--gray-mid); font-style:italic; }
+.h-amount { font-family:'Fredoka',sans-serif; font-weight:700; font-size:13px; }
+.h-amount.win { color:var(--win-green); }
+.h-amount.lose { color:var(--danger); }
+
+.bottom-nav {
+  position:fixed; bottom:0; left:50%; transform:translateX(-50%);
+  width:100%; max-width:430px; background:rgba(255,255,255,.95);
+  backdrop-filter:blur(12px); padding:7px 14px 24px;
+  display:flex; justify-content:space-around; border-top:1px solid rgba(0,0,0,.05); z-index:50;
+}
+.nav-item {
+  display:flex; flex-direction:column; align-items:center; gap:1px;
+  font-size:9px; font-weight:700; color:var(--gray-light); cursor:pointer;
+  background:none; border:none; font-family:'Nunito',sans-serif; transition:color .2s;
+}
+.nav-item.active { color:var(--teal-text); }
+.nav-item .nav-icon { font-size:20px; }
+
+/* ===== PREDICTION OVERLAY ===== */
+.pred-overlay {
+  position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(10,22,40,.7);
+  backdrop-filter:blur(6px); z-index:100; display:none; align-items:center;
+  justify-content:center; padding:20px;
+}
+.pred-overlay.show { display:flex; }
+.pred-card {
+  background:#fff; border-radius:22px; padding:26px 20px; max-width:360px; width:100%;
+  text-align:center; animation:popIn .5s cubic-bezier(.68,-.55,.265,1.55);
+  box-shadow:0 20px 60px rgba(0,0,0,.2); position:relative; overflow:hidden;
+}
+.pred-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:4px;
+  background:linear-gradient(90deg,var(--coin-gold),var(--btn-teal),var(--purple-accent),var(--coin-gold));
+  background-size:200% 100%; animation:gradSlide 3s linear infinite;
+}
+@keyframes gradSlide { 0%{background-position:0% 0} 100%{background-position:200% 0} }
+@keyframes popIn { 0%{transform:scale(.5) translateY(30px);opacity:0} 100%{transform:scale(1) translateY(0);opacity:1} }
+.pred-icon { font-size:48px; margin-bottom:6px; animation:wiggle .6s ease-in-out; }
+@keyframes wiggle { 0%,100%{transform:rotate(0)} 25%{transform:rotate(-12deg)} 75%{transform:rotate(12deg)} }
+.pred-result { font-family:'Fredoka',sans-serif; font-size:13px; font-weight:600; color:var(--gray-text); text-transform:uppercase; letter-spacing:1px; margin-bottom:3px; }
+.pred-result.win { color:var(--win-green); }
+.pred-amount { font-family:'Fredoka',sans-serif; font-size:30px; font-weight:700; color:var(--text-dark); margin-bottom:12px; }
+.pred-amount.win { color:var(--win-green); }
+.pred-text { font-size:14px; line-height:1.5; color:var(--gray-mid); margin-bottom:4px; padding:12px; background:#F8F9FA; border-radius:12px; border-left:3px solid var(--purple-accent); font-style:italic; }
+.pred-mindset { font-family:'Space Mono',monospace; font-size:9px; color:var(--gray-light); margin-bottom:14px; letter-spacing:.5px; }
+.pred-close {
+  background:linear-gradient(135deg,var(--teal-btn-bg),#006978);
+  color:#fff; border:none; border-radius:50px; padding:12px 32px;
+  font-family:'Fredoka',sans-serif; font-size:14px; font-weight:600; cursor:pointer;
+}
+
+/* Coin fly */
+.coin-fly {
+  position:fixed; z-index:200; width:34px; height:34px; border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#FFE082,#FFB300);
+  box-shadow:0 2px 12px rgba(255,183,0,.5); display:flex; align-items:center;
+  justify-content:center; font-size:15px; font-weight:700; color:#F57F17;
+  pointer-events:none; animation:coinThrow 1.2s cubic-bezier(.25,.46,.45,.94) forwards;
+}
+@keyframes coinThrow { 0%{opacity:1;transform:translateY(0) rotate(0) scale(1)} 50%{transform:translateY(-120px) rotate(360deg) scale(1.2)} 100%{opacity:0;transform:translateY(-40px) rotate(720deg) scale(.3)} }
+
+.splash { position:absolute; top:40%; left:50%; transform:translate(-50%,-50%); pointer-events:none; z-index:5; }
+.splash-drop { position:absolute; width:5px; height:5px; background:var(--sky-top); border-radius:50%; opacity:0; }
+.splash-drop.go { animation:splashOut .6s ease-out forwards; }
+@keyframes splashOut { 0%{transform:translate(0,0) scale(0);opacity:.8} 100%{transform:translate(var(--tx),var(--ty)) scale(1);opacity:0} }
+
+.spinner { width:18px; height:18px; border:2.5px solid rgba(38,50,56,.2); border-top-color:var(--text-dark); border-radius:50%; animation:spin .7s linear infinite; display:inline-block; }
+@keyframes spin { to{transform:rotate(360deg)} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+
+@media(max-height:720px){
+  .game-well-wrap{width:150px;height:150px}
+  .pool-card{margin:0 14px 6px;padding:10px 12px}
+  .pool-amount{font-size:24px}
+  .ritual-banner{margin:6px 14px;padding:7px 10px}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- ===== LANDING ===== -->
+  <div class="screen landing active" id="landingScreen">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('fr')">FR</button>
+    </div>
+    <div class="stars-canvas" id="starsCanvas"></div>
+
+    <div class="landing-hero">
+      <div class="landing-badge" data-en="ON-CHAIN RITUAL" data-fr="RITUEL ON-CHAIN">ON-CHAIN RITUAL</div>
+      <div class="landing-well-icon">
+        <div class="landing-well-glow"></div>
+        <svg viewBox="0 0 140 140" fill="none" style="position:relative;z-index:1">
+          <g transform="translate(0,5)">
+            <ellipse cx="70" cy="125" rx="60" ry="12" fill="#66BB6A" opacity=".5"/>
+            <rect x="32" y="70" width="76" height="50" rx="8" fill="#CFD8DC"/>
+            <line x1="36" y1="85" x2="104" y2="85" stroke="#B0BEC5" stroke-width="1.5"/>
+            <line x1="36" y1="100" x2="104" y2="100" stroke="#B0BEC5" stroke-width="1.5"/>
+            <rect x="40" y="73" width="60" height="10" rx="4" fill="#4FC3F7" opacity=".6"/>
+            <circle cx="58" cy="98" r="5" fill="#fff"/><circle cx="59.5" cy="97.5" r="2.5" fill="#263238"/>
+            <circle cx="82" cy="98" r="5" fill="#fff"/><circle cx="83.5" cy="97.5" r="2.5" fill="#263238"/>
+            <path d="M62 109 Q70 117 78 109" stroke="#263238" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <ellipse cx="54" cy="106" rx="5" ry="3" fill="#F48FB1" opacity=".35"/>
+            <ellipse cx="86" cy="106" rx="5" ry="3" fill="#F48FB1" opacity=".35"/>
+            <rect x="40" y="38" width="6" height="35" rx="2" fill="#8D6E63"/>
+            <rect x="94" y="38" width="6" height="35" rx="2" fill="#8D6E63"/>
+            <rect x="37" y="36" width="66" height="5" rx="2.5" fill="#6D4C41"/>
+            <polygon points="28,40 70,15 112,40" fill="#FFB74D"/>
+            <polygon points="32,40 70,18 108,40" fill="#FFC107"/>
+            <circle cx="70" cy="52" r="7" fill="#FFD54F" stroke="#FFC107" stroke-width="1.5"/>
+            <text x="70" y="55.5" text-anchor="middle" font-size="8" font-weight="bold" fill="#F57F17">◎</text>
+          </g>
+        </svg>
+      </div>
+      <div class="landing-title"><span class="lucky">Lucky</span><span class="well">Well</span></div>
+      <div class="landing-tagline" data-en="Before you ape in, throw a coin." data-fr="Avant de trader, jette un coin.">Before you ape in, throw a coin.</div>
+    </div>
+
+    <div class="landing-oneliner" data-en="Throw a coin, receive a sign, and enter the market with the <em>right mindset</em>." data-fr="Jette un coin, reçois un signe, et entre sur le marché avec le <em>bon état d'esprit</em>.">
+      Throw a coin, receive a sign, and enter the market with the <em>right mindset</em>.
+    </div>
+
+    <div class="ritual-steps">
+      <div class="ritual-step">
+        <div class="step-num">🪙</div>
+        <div class="step-content">
+          <h3 data-en="Throw a coin" data-fr="Jette un coin">Throw a coin</h3>
+          <p data-en="Send a token into the on-chain well. Your ritual begins." data-fr="Envoie un token dans le puits on-chain. Ton rituel commence.">Send a token into the on-chain well. Your ritual begins.</p>
+        </div>
+      </div>
+      <div class="ritual-step">
+        <div class="step-num">🔮</div>
+        <div class="step-content">
+          <h3 data-en="Get your sign" data-fr="Reçois ton signe">Get your sign</h3>
+          <p data-en="A trader-focused prediction to center your mind before action." data-fr="Une prédiction pour recentrer ton esprit avant l'action.">A trader-focused prediction to center your mind before action.</p>
+        </div>
+      </div>
+      <div class="ritual-step">
+        <div class="step-num">✨</div>
+        <div class="step-content">
+          <h3 data-en="Sometimes, luck answers" data-fr="Parfois, la chance répond">Sometimes, luck answers</h3>
+          <p data-en="Win 2x to 5x your offering. 28% chance. Same odds for everyone. Transparent & on-chain." data-fr="Gagne 2x à 5x ton offrande. 28% de chance. Mêmes odds pour tous. Transparent & on-chain.">Win 2x to 5x your offering. 28% chance. Same odds for everyone. Transparent & on-chain.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="philo-section">
+      <div class="philo-label" data-en="WHY TRADERS USE IT" data-fr="POURQUOI LES TRADERS L'UTILISENT">WHY TRADERS USE IT</div>
+      <div class="philo-card">
+        <div class="icon">🧠</div>
+        <div class="text" data-en="A <strong>mental reset</strong> before committing capital. Most bad trades are emotional, not technical." data-fr="Un <strong>reset mental</strong> avant d'engager du capital. La plupart des mauvais trades sont émotionnels.">A <strong>mental reset</strong> before committing capital. Most bad trades are emotional, not technical.</div>
+      </div>
+      <div class="philo-card">
+        <div class="icon">🧿</div>
+        <div class="text" data-en="A <strong>shared ritual</strong>. Traders already have superstitions. LuckyWell makes them on-chain." data-fr="Un <strong>rituel partagé</strong>. Les traders ont leurs superstitions. LuckyWell les rend on-chain.">A <strong>shared ritual</strong>. Traders already have superstitions. LuckyWell makes them on-chain.</div>
+      </div>
+      <div class="philo-card">
+        <div class="icon">🎯</div>
+        <div class="text" data-en="LuckyWell doesn't tell you <strong>what</strong> to trade. It helps you trade with <strong>intention</strong>." data-fr="LuckyWell ne dit pas <strong>quoi</strong> trader. Il t'aide à trader avec <strong>intention</strong>.">LuckyWell doesn't tell you <strong>what</strong> to trade. It helps you trade with <strong>intention</strong>.</div>
+      </div>
+    </div>
+
+    <div class="not-section">
+      <h4 data-en="What LuckyWell is NOT" data-fr="Ce que LuckyWell N'EST PAS">What LuckyWell is NOT</h4>
+      <div class="not-item"><span class="x">✕</span><span data-en="Not a trading bot" data-fr="Pas un bot de trading">Not a trading bot</span></div>
+      <div class="not-item"><span class="x">✕</span><span data-en="Not financial advice" data-fr="Pas un conseil financier">Not financial advice</span></div>
+      <div class="not-item"><span class="x">✕</span><span data-en="Not a promise of profit" data-fr="Pas une promesse de profit">Not a promise of profit</span></div>
+      <div class="not-coda" data-en="It's a transparent ritual game." data-fr="C'est un jeu rituel, transparent et assumé.">It's a transparent ritual game.</div>
+    </div>
+
+    <div class="landing-cta">
+      <div class="closing-quote" data-en="\"Luck favors the prepared mind.\"" data-fr="\"La chance sourit aux esprits préparés.\"">"Luck favors the prepared mind."</div>
+      <button class="btn-connect" onclick="goToGame()" data-en="Connect Wallet & Begin" data-fr="Connecter Wallet & Commencer">Connect Wallet & Begin</button>
+      <button class="btn-skip" onclick="goToGame()" data-en="Explore without wallet" data-fr="Explorer sans wallet">Explore without wallet</button>
+    </div>
+
+    <div class="landing-footer">
+      <div data-en="Non-custodial · Verifiable · Transparent" data-fr="Non-custodial · Vérifiable · Transparent">Non-custodial · Verifiable · Transparent</div>
+      <div class="sol-badge"><span>◎</span> Built on Solana</div>
+    </div>
+  </div>
+
+  <!-- ===== GAME SCREEN ===== -->
+  <div class="screen game-screen" id="gameScreen">
+    <div class="game-header">
+      <div class="wallet-badge"><span class="dot"></span><span id="walletAddr">7xK...f3q</span></div>
+      <div class="header-right">
+        <div class="mindset-badge" id="mindsetBadge">RITUAL MODE</div>
+        <div class="balance-display">
+          <div class="label">Balance</div>
+          <div class="amount" id="userBalance">12.40 SOL</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ritual-banner"><span class="rb-icon">🧠</span><span class="rb-text" id="ritualText"><strong>Breathe.</strong> Center your mind. The well is listening.</span></div>
+
+    <div class="pool-card">
+      <div class="pool-header">
+        <div class="pool-title">🏆 <span data-en="The Well holds" data-fr="Le Puits contient">The Well holds</span></div>
+        <div class="pool-live">LIVE</div>
+      </div>
+      <div class="pool-amount"><span id="poolAmount">847.32</span><span class="sol">SOL</span></div>
+      <div class="pool-stats">
+        <div class="pool-stat"><span data-en="Rituals" data-fr="Rituels">Rituals</span>: <strong id="throwCount">8,439</strong></div>
+        <div class="pool-stat"><span data-en="Traders" data-fr="Joueurs">Traders</span>: <strong id="playerCount">1,247</strong></div>
+      </div>
+    </div>
+
+    <div class="game-well-area" id="wellArea">
+      <div class="game-well-wrap">
+        <svg class="well-svg" viewBox="0 0 260 260" fill="none">
+          <ellipse cx="130" cy="230" rx="110" ry="22" fill="#66BB6A"/>
+          <ellipse cx="130" cy="228" rx="100" ry="18" fill="#81C784"/>
+          <g class="well-face">
+            <rect x="65" y="140" width="130" height="80" rx="10" fill="#B0BEC5"/>
+            <rect x="70" y="145" width="120" height="70" rx="8" fill="#CFD8DC"/>
+            <line x1="75" y1="165" x2="185" y2="165" stroke="#B0BEC5" stroke-width="1.5"/>
+            <line x1="75" y1="185" x2="185" y2="185" stroke="#B0BEC5" stroke-width="1.5"/>
+            <line x1="130" y1="145" x2="130" y2="165" stroke="#B0BEC5" stroke-width="1.5"/>
+            <line x1="100" y1="165" x2="100" y2="185" stroke="#B0BEC5" stroke-width="1.5"/>
+            <line x1="160" y1="165" x2="160" y2="185" stroke="#B0BEC5" stroke-width="1.5"/>
+            <line x1="130" y1="185" x2="130" y2="215" stroke="#B0BEC5" stroke-width="1.5"/>
+            <rect x="80" y="148" width="100" height="14" rx="5" fill="#4FC3F7" class="water-shimmer" opacity=".7"/>
+            <circle cx="108" cy="192" r="9" fill="#fff"/><circle cx="152" cy="192" r="9" fill="#fff"/>
+            <circle cx="110" cy="191" r="4.5" fill="#263238"/><circle cx="154" cy="191" r="4.5" fill="#263238"/>
+            <circle cx="112" cy="189" r="1.8" fill="#fff"/><circle cx="156" cy="189" r="1.8" fill="#fff"/>
+            <path d="M117 206 Q130 218 143 206" stroke="#263238" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <ellipse cx="100" cy="203" rx="7" ry="4" fill="#F48FB1" opacity=".35"/>
+            <ellipse cx="160" cy="203" rx="7" ry="4" fill="#F48FB1" opacity=".35"/>
+          </g>
+          <rect x="78" y="82" width="9" height="62" rx="3" fill="#8D6E63"/>
+          <rect x="173" y="82" width="9" height="62" rx="3" fill="#8D6E63"/>
+          <rect x="74" y="80" width="112" height="7" rx="3.5" fill="#6D4C41"/>
+          <polygon points="60,83 130,42 200,83" fill="#FFA726"/>
+          <polygon points="65,83 130,47 195,83" fill="#FFB74D"/>
+          <line x1="130" y1="83" x2="130" y2="118" stroke="#8D6E63" stroke-width="1.5"/>
+          <path d="M119 116 L121 132 L139 132 L141 116 Z" fill="#8D6E63"/>
+          <circle cx="130" cy="113" r="7" fill="#FFD54F" stroke="#FFC107" stroke-width="1.5"/>
+          <text x="130" y="116.5" text-anchor="middle" font-size="8" font-weight="bold" fill="#F57F17">◎</text>
+        </svg>
+        <div class="splash" id="splash"></div>
+      </div>
+      <div class="throw-prompt" id="throwPrompt" data-en="✨ Choose your offering & throw ✨" data-fr="✨ Choisis ton offrande & lance ✨">✨ Choose your offering & throw ✨</div>
+    </div>
+
+    <div class="token-section">
+      <div class="amount-card">
+        <div class="amount-label" data-en="🪙 Your offering" data-fr="🪙 Ton offrande">🪙 Your offering</div>
+        <div class="amount-grid">
+          <button class="amt-btn" data-amount="0.05" data-max="0.25" onclick="selectAmt(this)">0.05<span class="amt-sub">→ 0.25</span></button>
+          <button class="amt-btn selected" data-amount="0.1" data-max="0.50" onclick="selectAmt(this)">0.1<span class="amt-sub">→ 0.50</span></button>
+          <button class="amt-btn" data-amount="0.25" data-max="1.25" onclick="selectAmt(this)">0.25<span class="amt-sub">→ 1.25</span></button>
+          <button class="amt-btn" data-amount="0.5" data-max="2.50" onclick="selectAmt(this)">0.5<span class="amt-sub">→ 2.50</span></button>
+        </div>
+        <div class="payout-info" id="payoutInfo">
+          <div class="payout-left">
+            <span class="payout-label" data-en="MAX WIN" data-fr="GAIN MAX">MAX WIN</span>
+            <span class="payout-value" id="payoutMax">0.50 <span class="sol">SOL</span></span>
+          </div>
+          <div class="payout-right">
+            <span class="payout-mult" id="payoutMult">2x — 5x</span>
+            <span class="payout-odds" data-en="Same odds for all" data-fr="Mêmes chances pour tous">Same odds for all</span>
+          </div>
+        </div>
+        <div class="odds-strip">
+          <span class="odds-label" id="oddsLabel">28%</span>
+          <div class="odds-bar-wrap"><div class="odds-bar-fill" id="oddsBar" style="width:28%"></div></div>
+          <span class="odds-label" data-en="win chance" data-fr="chance de gain">win chance</span>
+        </div>
+        <button class="throw-btn" id="throwBtn" onclick="throwCoin()" data-en="🪙 Throw into the Well" data-fr="🪙 Jeter dans le puits">🪙 Throw into the Well</button>
+      </div>
+    </div>
+
+    <div class="history-section" id="historySection">
+      <div class="history-title" data-en="📜 Your Rituals" data-fr="📜 Tes Rituels">📜 Your Rituals</div>
+    </div>
+
+    <div class="bottom-nav">
+      <button class="nav-item active"><span class="nav-icon">🏠</span><span data-en="Well" data-fr="Puits">Well</span></button>
+      <button class="nav-item"><span class="nav-icon">📊</span><span>Stats</span></button>
+      <button class="nav-item"><span class="nav-icon">🏆</span><span>Top</span></button>
+      <button class="nav-item"><span class="nav-icon">👤</span><span>Profil</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- PREDICTION OVERLAY -->
+<div class="pred-overlay" id="predOverlay">
+  <div class="pred-card">
+    <div class="pred-icon" id="predIcon">🔮</div>
+    <div class="pred-result" id="predResult"></div>
+    <div class="pred-amount" id="predAmount"></div>
+    <div class="pred-text" id="predText"></div>
+    <div class="pred-mindset" id="predMindset"></div>
+    <button class="pred-close" onclick="closePred()" id="predClose">Trade with intention ✨</button>
+  </div>
+</div>
+
+<script>
+let lang='en', selectedAmount=0.1, userBalance=12.4, poolAmount=847.32, playerCount=1247, throwCount=8439;
+
+const predictions={
+  en:[
+    {text:"Patience is the edge today. Wait for the setup, not the impulse.",mindset:"Anti-FOMO"},
+    {text:"The chart sees what you don't want to see. Trust the levels.",mindset:"Discipline"},
+    {text:"A small win protected beats a big win imagined.",mindset:"Risk management"},
+    {text:"The market doesn't owe you a move. Accept the wait.",mindset:"Acceptance"},
+    {text:"Your last loss doesn't define your next entry. Fresh eyes.",mindset:"Reset"},
+    {text:"Leverage amplifies your clarity — or your chaos.",mindset:"Self-awareness"},
+    {text:"The best trade today might be no trade at all.",mindset:"Restraint"},
+    {text:"You don't need the bottom. You need your breath.",mindset:"Calm entry"},
+    {text:"The well whispers: size down. Let conviction grow with confirmation.",mindset:"Position sizing"},
+    {text:"Three green candles don't guarantee a fourth. Stay humble.",mindset:"Humility"},
+    {text:"If your chest is tight, step back. Your body knows first.",mindset:"Body check"},
+    {text:"The market rewards those who can sit still. Can you?",mindset:"Patience"},
+    {text:"Fortune favors the prepared — not the first to click.",mindset:"Preparation"},
+    {text:"Every revenge trade is a gift to the market maker.",mindset:"Emotional control"},
+    {text:"The trend is your ritual. Follow it or sit it out.",mindset:"Trend respect"},
+  ],
+  fr:[
+    {text:"La patience est ton avantage. Attends le setup, pas l'impulsion.",mindset:"Anti-FOMO"},
+    {text:"Le chart voit ce que tu refuses. Fais confiance aux niveaux.",mindset:"Discipline"},
+    {text:"Un petit gain protégé vaut plus qu'un gros gain imaginé.",mindset:"Gestion du risque"},
+    {text:"Le marché ne te doit rien. Accepte l'attente.",mindset:"Acceptation"},
+    {text:"Ta dernière perte ne définit pas ta prochaine entrée.",mindset:"Reset"},
+    {text:"Le levier amplifie ta clarté — ou ton chaos.",mindset:"Conscience de soi"},
+    {text:"Le meilleur trade aujourd'hui est peut-être de ne pas trader.",mindset:"Retenue"},
+    {text:"Tu n'as pas besoin du bottom. Tu as besoin de souffler.",mindset:"Entrée calme"},
+    {text:"Le puits murmure : réduis ta taille. Laisse la conviction grandir.",mindset:"Taille de position"},
+    {text:"Trois bougies vertes ne garantissent pas une quatrième.",mindset:"Humilité"},
+    {text:"Si ta poitrine est serrée, recule. Ton corps sait avant toi.",mindset:"Check corporel"},
+    {text:"Le marché récompense ceux qui savent rester immobiles.",mindset:"Patience"},
+    {text:"La fortune sourit aux préparés — pas aux premiers à cliquer.",mindset:"Préparation"},
+    {text:"Chaque revenge trade est un cadeau au market maker.",mindset:"Contrôle émotionnel"},
+    {text:"La tendance est ton rituel. Suis-la ou reste en dehors.",mindset:"Respect du trend"},
+  ]
+};
+
+const banners={
+  en:[
+    "<strong>Breathe.</strong> Center your mind. The well is listening.",
+    "<strong>Pause.</strong> Not every candle needs a reaction.",
+    "<strong>Check in.</strong> Are you trading or chasing?",
+    "<strong>Ground yourself.</strong> One ritual before one trade.",
+    "<strong>Markets are irrational.</strong> Be the exception.",
+  ],
+  fr:[
+    "<strong>Respire.</strong> Recentre ton esprit. Le puits écoute.",
+    "<strong>Pause.</strong> Chaque bougie ne mérite pas une réaction.",
+    "<strong>Check-in.</strong> Tu trades ou tu chases ?",
+    "<strong>Ancre-toi.</strong> Un rituel avant un trade.",
+    "<strong>Les marchés sont irrationnels.</strong> Sois l'exception.",
+  ]
+};
+
+// Stars
+(function(){const c=document.getElementById('starsCanvas');for(let i=0;i<50;i++){const s=document.createElement('div');s.className='star';s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';s.style.setProperty('--dur',(2+Math.random()*3)+'s');s.style.setProperty('--delay',Math.random()*3+'s');if(Math.random()>.7){s.style.width='3px';s.style.height='3px';}c.appendChild(s);}})();
+
+function setLang(l){
+  lang=l;
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.textContent.trim()===l.toUpperCase()));
+  document.querySelectorAll('[data-'+l+']').forEach(el=>{const v=el.getAttribute('data-'+l);if(v)el.innerHTML=v;});
+  updateBanner();
+}
+
+function goToGame(){
+  document.getElementById('landingScreen').classList.remove('active');
+  document.getElementById('gameScreen').classList.add('active');
+  updateBanner();
+}
+
+function updateBanner(){
+  const b=banners[lang];
+  document.getElementById('ritualText').innerHTML=b[Math.floor(Math.random()*b.length)];
+}
+
+function selectAmt(btn){
+  document.querySelectorAll('.amt-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedAmount=parseFloat(btn.dataset.amount);
+  // Update payout display
+  const maxWin=parseFloat(btn.dataset.max);
+  document.getElementById('payoutMax').innerHTML=maxWin.toFixed(2)+' <span class="sol">SOL</span>';
+}
+
+function throwCoin(){
+  if(selectedAmount>userBalance)return;
+  const tb=document.getElementById('throwBtn');
+  tb.disabled=true;
+  tb.innerHTML='<span class="spinner"></span> '+(lang==='fr'?'Le puits lit...':'The well reads...');
+
+  // Coin animation
+  const wa=document.getElementById('wellArea'),r=wa.getBoundingClientRect();
+  const c=document.createElement('div');c.className='coin-fly';c.textContent='◎';
+  c.style.left=(r.left+r.width/2-17)+'px';c.style.top=(r.top+r.height*.7)+'px';
+  document.body.appendChild(c);setTimeout(()=>c.remove(),1200);
+
+  // Splash
+  setTimeout(()=>{
+    const sp=document.getElementById('splash');sp.innerHTML='';
+    for(let i=0;i<8;i++){const d=document.createElement('div');d.className='splash-drop go';
+    const a=(i/8)*Math.PI*2;d.style.setProperty('--tx',Math.cos(a)*25+'px');d.style.setProperty('--ty',Math.sin(a)*18+'px');
+    sp.appendChild(d);}setTimeout(()=>sp.innerHTML='',800);
+  },800);
+
+  setTimeout(()=>{
+    const devFee=selectedAmount*.20, toPool=selectedAmount-devFee;
+    const isWin=Math.random()<.28;
+    const pl=predictions[lang], pred=pl[Math.floor(Math.random()*pl.length)];
+    let result;
+
+    if(isWin){
+      const m=2+Math.random()*3;
+      const w=Math.min(parseFloat((selectedAmount*m).toFixed(4)),poolAmount*.08);
+      result={win:true,amount:w,prediction:pred};
+      userBalance=parseFloat((userBalance-selectedAmount+w).toFixed(4));
+      poolAmount=parseFloat((poolAmount-w+toPool).toFixed(2));
+    }else{
+      result={win:false,amount:selectedAmount,prediction:pred};
+      userBalance=parseFloat((userBalance-selectedAmount).toFixed(4));
+      poolAmount=parseFloat((poolAmount+toPool).toFixed(2));
+    }
+    throwCount++;
+
+    document.getElementById('userBalance').textContent=userBalance.toFixed(2)+' SOL';
+    document.getElementById('poolAmount').textContent=poolAmount.toFixed(2);
+    document.getElementById('throwCount').textContent=throwCount.toLocaleString();
+
+    showPred(result);addHistory(result);updateBanner();
+    tb.disabled=false;
+    tb.innerHTML='🪙 '+(lang==='fr'?'Jeter dans le puits':'Throw into the Well');
+  },1800);
+}
+
+function showPred(r){
+  const o=document.getElementById('predOverlay');
+  if(r.win){
+    document.getElementById('predIcon').textContent='🎉';
+    document.getElementById('predResult').textContent=lang==='fr'?'La chance te sourit !':'Luck answers!';
+    document.getElementById('predResult').className='pred-result win';
+    document.getElementById('predAmount').textContent='+'+r.amount.toFixed(4)+' SOL';
+    document.getElementById('predAmount').className='pred-amount win';
+  }else{
+    document.getElementById('predIcon').textContent='🔮';
+    document.getElementById('predResult').textContent=lang==='fr'?'Le puits garde ton offrande':'The well keeps your offering';
+    document.getElementById('predResult').className='pred-result';
+    document.getElementById('predAmount').textContent='-'+r.amount+' SOL';
+    document.getElementById('predAmount').className='pred-amount';
+  }
+  document.getElementById('predText').textContent='« '+r.prediction.text+' »';
+  document.getElementById('predMindset').textContent='🧠 '+r.prediction.mindset.toUpperCase();
+  document.getElementById('predClose').textContent=lang==='fr'?'Trade avec intention ✨':'Trade with intention ✨';
+  o.classList.add('show');
+}
+
+function closePred(){document.getElementById('predOverlay').classList.remove('show');}
+
+function addHistory(r){
+  const s=document.getElementById('historySection'),item=document.createElement('div');
+  item.className='history-item';
+  item.innerHTML=`<div class="h-left"><span class="h-emoji">${r.win?'🎉':'🔮'}</span><div class="h-info"><div class="h-label">${r.win?(lang==='fr'?'Gagné !':'Won!'):(lang==='fr'?'Offrande':'Offering')}</div><div class="h-pred">${r.prediction.text.substring(0,36)}…</div></div></div><div class="h-amount ${r.win?'win':'lose'}">${r.win?'+'+r.amount.toFixed(3):'-'+r.amount} SOL</div>`;
+  s.querySelector('.history-title').after(item);
+  const items=s.querySelectorAll('.history-item');
+  if(items.length>10)items[items.length-1].remove();
+}
+</script>
+</body>
+</html>
