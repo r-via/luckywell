@@ -1,0 +1,78 @@
+{
+  "folders": [
+    { "name": "luckywell", "path": "../luckywell" }
+  ],
+  "settings": {
+    "editor.formatOnSave": false,
+    "files.associations": {
+      "*.env": "shell",
+      "*.llm": "xml"
+    }
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Codexify: Export Project (using existing config)",
+        "type": "shell",
+        "command": "${workspaceFolder:luckywell}/.venv/bin/codexify",
+        "args": [
+          "--config",
+          "config.compiled.luckywell.yaml"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder:luckywell}"
+        },
+        "problemMatcher": [],
+        "presentation": {
+          "echo": true, "reveal": "always", "focus": false, "panel": "shared",
+          "showReuseMessage": false, "clear": true
+        }
+      },
+      {
+        "label": "Codexify: Save Project Config & Export",
+        "type": "shell",
+        "command": "${workspaceFolder:luckywell}/.venv/bin/codexify",
+        "args": [
+          "--path", ".",
+          "--extensions", ".py", ".go", ".md",
+          "--gitignore", ".gitignore",
+          "--config-name", "luckywell",
+          "--save"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder:luckywell}"
+        },
+        "problemMatcher": [],
+        "presentation": {
+          "echo": true, "reveal": "always", "focus": false, "panel": "shared",
+          "showReuseMessage": false, "clear": true
+        }
+      },
+      {
+        "label": "Codexify: Export using Specific Config File",
+        "type": "shell",
+        "command": "${workspaceFolder:luckywell}/.venv/bin/codexify",
+        "args": [
+          "--config",
+          "${input:configPath}"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder:luckywell}"
+        },
+        "problemMatcher": [],
+        "presentation": {
+          "echo": true, "reveal": "always", "focus": false, "panel": "shared",
+          "showReuseMessage": false, "clear": true
+        }
+      }
+    ],
+    "inputs": [
+      {
+        "id": "configPath",
+        "type": "promptString",
+        "description": "Enter config file path relative to luckywell (e.g., config.compiled.luckywell.yaml)"
+      }
+    ]
+  }
+}
